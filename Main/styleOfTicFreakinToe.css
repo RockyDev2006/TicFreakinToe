@@ -1,0 +1,56 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: wheat;
+  font-size: 3rem;
+  font-family: "Poppins";
+}
+
+.container{
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.temp-board {
+  display: flex;
+  justify-content: center;
+}
+
+.grid-item-container {
+  display: flex;
+  width: 100px;
+  height: 100px;
+  margin: 2px;
+  background-color: aliceblue;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero{
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hell{
+  background-color: rgb(255, 136, 136);
+}
+
+#game-title-history{
+  color: rgb(39, 37, 37);
+  opacity: .7;
+  font-size: 2.8rem;
+}
+
+.show-the-text{
+  position: absolute;
+  top:10px;
+  margin-left: 50%;
+  transform: translate(-50%)
+}
