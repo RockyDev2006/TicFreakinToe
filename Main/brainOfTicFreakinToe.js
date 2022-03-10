@@ -34,14 +34,22 @@ gameBoard.forEach((item) => {
   item.addEventListener("click", PlayGame, { once: true });
 });
 
+gameBoard.forEach((item) => {
+  item.addEventListener("mouseenter",showTurn)
+})
+
+gameBoard.forEach((item) => {
+  item.addEventListener("mouseleave",removeTurn)
+})
+
 
 // ------------------ GAME LOOP --------------------
 
 function PlayGame() {
-
+  const chidOfGridContainer = this.children[0]
   let x = this.children[0].id;
   let x_prev = x
-  // console.log(this.children[0]);
+  // console.log(chidOfGridContainer);
   
   let y = available_space.indexOf(parseInt(x));
   // console.log(x);
@@ -62,12 +70,12 @@ function PlayGame() {
     gameTitle_His.textContent = currentPlayerReverse + " :  " + x_prev + " --> " + (x = currentPlayer)
   }
   
-  // gameTitle_His.textContent = currentPlayerReverse + " :  " + x_prev + " --> " + (x = currentPlayer)
   let grid_Index = this.querySelector(".grid-item");
   grid_Index.innerText = currentPlayer;
+  chidOfGridContainer.classList.add("marked")
   available_space.splice(y,1)
   console.log(available_space);
-  // grid_Index.classList.add("alpha-1")
+  // grid_Index.classList.add("grid-item-mark-indicator")
   
   
   checkIfGameOver();
@@ -89,7 +97,7 @@ function checkIfGameOver() {
   rowWin();
   columnWin();
   diagonalWin();
-  // tie();
+  tie();
   if (winner != ""){
     winningSound.volume = 0.3
     winningSound.play()
@@ -188,10 +196,10 @@ function diagonalWin() {
 
 
 function tie() {
-
-  if ("-" != board) {
-    console.log("It's a Tie Bro");
-    isTheFreakinGameStillGoing = false;
+  if(available_space.length == 0){
+    displayOnScreenText("Looks Like It's A Tie!")
+    winnerRedDisplay([0,1,2,3,4,5,6,7,8])
+    winner = "XO"
   }
 
 }
@@ -216,7 +224,7 @@ function displayOnScreenText(string){
 }
 
 function winnerRedDisplay(arr){
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < arr.length; i++) {
     gameBoard.forEach((item) => {
       if(item.children[0].id == arr[i]){
         item.classList.add("hell")
@@ -242,4 +250,35 @@ function BotPlay(x_prev,x){
   flipPlayerMyGame()
   checkIfGameOver()
   
+}
+
+
+function showTurn(){
+  // console.log("hey");
+  if(currentPlayer === "X"){
+    this.childNodes[1].classList.add("grid-item-mark-indicator-x")
+  }else{
+    this.childNodes[1].classList.add("grid-item-mark-indicator-o")
+  }
+  // this.childNodes[1].innerText=currentPlayer
+  
+}
+
+function removeTurn(){
+  // console.log("bye");s
+  if(currentPlayer === "X"){
+    // console.log(this.classList.value.includes("grid-item-mark-indicator-x"));
+    
+    if(this.childNodes[1].classList.value.includes("grid-item-mark-indicator-x")){
+      this.childNodes[1].classList.remove("grid-item-mark-indicator-x")
+      // this.childNodes[1].innerText=""
+    }
+  }else{
+    if(this.childNodes[1].classList.value.includes("grid-item-mark-indicator-o")){
+      this.childNodes[1].classList.remove("grid-item-mark-indicator-o")
+      // this.childNodes[1].innerText=""
+    }
+  }
+  
+
 }

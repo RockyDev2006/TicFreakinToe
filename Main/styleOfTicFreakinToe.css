@@ -22,6 +22,7 @@ body {
 }
 
 .grid-item-container {
+  position: relative;
   display: flex;
   width: 100px;
   height: 100px;
@@ -29,6 +30,18 @@ body {
   background-color: aliceblue;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
+}
+
+
+.grid-item-mark-indicator-x:not(.marked)::after{
+  content: "X";
+  opacity: .3;
+}
+
+.grid-item-mark-indicator-o:not(.marked)::after{
+  content: "O";
+  opacity: .3;
 }
 
 .hero{
@@ -53,4 +66,8 @@ body {
   top:10px;
   margin-left: 50%;
   transform: translate(-50%)
+}
+
+.alpha-1{
+  opacity: 0.3;
 }
