@@ -7,13 +7,14 @@ let currentPlayerReverse = ""
 let botMode = false
 let available_space = [0,1,2,3,4,5,6,7,8]
 const gameBoard = document.querySelectorAll(".grid-item-container");
-const childOfGame = document.querySelector(".grid-item-container").children[0]
 const gameTitle = document.querySelector("#game-title")
 const gameTitle_His = document.querySelector("#game-title-history")
 const winningSound = document.querySelector("#winning-sound")
 const marking1 = document.querySelector("#marking1-sound")
 const marking2 = document.querySelector("#marking2-sound")
 const gridItem = document.querySelectorAll(".grid-item");
+const replayBtn = document.querySelector("[data-replay-btn]");
+
 
 // ----------- Game Board Data Logging -----------
 
@@ -42,6 +43,7 @@ gameBoard.forEach((item) => {
   item.addEventListener("mouseleave",removeTurn)
 })
 
+replayBtn.addEventListener("click", replayBtnClickHandler)
 
 // ------------------ GAME LOOP --------------------
 
@@ -74,8 +76,7 @@ function PlayGame() {
   grid_Index.innerText = currentPlayer;
   chidOfGridContainer.classList.add("marked")
   available_space.splice(y,1)
-  console.log(available_space);
-  // grid_Index.classList.add("grid-item-mark-indicator")
+  // console.log(available_space);
   
   
   checkIfGameOver();
@@ -142,7 +143,7 @@ function columnWin() {
   let column1_color = [0,3,6]
   let column2_color = [1,4,7]
   let column3_color = [2,5,8]
-  let column1 = ((board[0] == board[3]) && board[3] == board[6]) && (board[3] == "X" || board[3] == "O")
+  let column1 = ((board[0] == board[3]) && board[3] == board[6]) && (board[3] === "X" || board[3] === "O")
   let column2 = ((board[1] == board[4]) && board[7] == board[4]) && (board[4] == "X" || board[4] == "O");
   let column3 = ((board[2] == board[5]) && board[5] == board[8]) && (board[8] == "X" || board[8] == "O");
 
@@ -151,6 +152,8 @@ function columnWin() {
     winner = board[0];
     isTheFreakinGameStillGoing = false;
     winnerRedDisplay(column1_color)
+    // console.log("Iam the sucker here");
+    // console.log(board);
   } 
   else if (column2 == true) {
     winner = board[1];
@@ -213,17 +216,20 @@ function flipPlayerMyGame(){
   else{
     currentPlayer = "X"
   }
-  console.log("Player Fliped"+ currentPlayer);
+  // console.log("Player Fliped"+ currentPlayer);
 
 }
 
 
 function displayOnScreenText(string){
   gameTitle.textContent = string
-  console.log("string " + string);
+  // console.log("string " + string);
 }
 
+
 function winnerRedDisplay(arr){
+  // console.log("2here"+isTheFreakinGameStillGoing);
+  // if (isTheFreakinGameStillGoing) return
   for (let i = 0; i < arr.length; i++) {
     gameBoard.forEach((item) => {
       if(item.children[0].id == arr[i]){
@@ -264,6 +270,7 @@ function showTurn(){
   
 }
 
+
 function removeTurn(){
   // console.log("bye");s
   if(currentPlayer === "X"){
@@ -281,4 +288,48 @@ function removeTurn(){
   }
   
 
+}
+
+
+function replayBtnClickHandler(){
+//  console.log("replay btn clicked");
+ currentPlayer = "X"
+ winner = ""
+ currentPlayerReverse = ""
+ available_space = [0,1,2,3,4,5,6,7,8]
+ board = [
+];
+for (let i = 0; i < 9; i++) {
+  board[i] = ""
+}
+ isTheFreakinGameStillGoing = true
+//  console.log("1here"+isTheFreakinGameStillGoing);
+
+ gridItem.forEach(element => {
+  //  element.classList=""
+  element.innerText = ""
+  if(element.classList.contains("marked")){
+    element.classList.remove("marked")
+  }
+  if(element.classList.contains("grid-item-mark-indicator-x")){
+    element.classList.remove("grid-item-mark-indicator-x")
+  }
+  else{
+    element.classList.remove("grid-item-mark-indicator-o")
+  }
+ });
+ gameBoard.forEach(element =>{
+   if(element.classList.contains("hell")){
+     element.classList.remove("hell")
+   }
+ })
+
+ displayOnScreenText(currentPlayer + "'s" + " Turn:")
+ gameTitle_His.innerText = ""
+
+ gameBoard.forEach((item) => {
+  item.addEventListener("click", PlayGame, { once: true });
+});
+// flipPlayerMyGame()
+// flipPlayerMyGame()
 }
