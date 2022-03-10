@@ -44,6 +44,12 @@ body {
   opacity: .3;
 }
 
+.grid-item.marked{
+  animation: scale;
+  animation-duration: .25s;
+
+}
+
 .hero{
   height: 100vh;
   display: flex;
@@ -90,4 +96,16 @@ body {
 .replay-btn:hover{
   padding: .6rem 1.6rem;
   background-color: hsl(209, 91%, 50%);
+}
+
+@keyframes scale{
+  0%{
+    font-size: 1rem;
+  }
+  80%{
+    font-size: 3.5rem;
+  }
+  100%{
+    font-size: 3rem;
+  }
 }
