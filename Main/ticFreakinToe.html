@@ -8,10 +8,17 @@
     <title>Tic Freakin Toe</title>
   </head>
   <body>
+    <div class="container-wrapper">
+
     <div class="container">
       <audio id="winning-sound" src="./Sound Effects/winning_sound.wav"></audio>
       <audio id="marking1-sound" src="./Sound Effects/markPos1.wav"></audio>
       <audio id="marking2-sound" src="./Sound Effects/markPos2.wav"></audio>
+      <div class="lonely-mode">
+        <input class="lonely-mode-checkbox" 
+        id="lonely" type="checkbox">
+        <label id="lonely-mode-text" for="lonely">Lonely Mode</label>
+      </div>
       <div class="show-the-text">
         <p id="game-title-history"></p>
         <p id="game-title">X's Turn: </p>
@@ -57,6 +64,8 @@
       </div>
     </div>
   </div>
+</div>
   </body>
-  <script src="brainOfTicFreakinToe.js"></script>
+  <script type="module" src="brainOfTicFreakinToe.js"></script>
+  <!-- <script type="module" src="lonelyMode.js"></script> -->
 </html>

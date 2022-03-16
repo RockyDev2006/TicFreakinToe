@@ -1,3 +1,5 @@
+import lonelyMode from "./lonelyMode.js";
+
 // ---------------Variables---------------
 
 let isTheFreakinGameStillGoing = true;
@@ -14,6 +16,7 @@ const marking1 = document.querySelector("#marking1-sound")
 const marking2 = document.querySelector("#marking2-sound")
 const gridItem = document.querySelectorAll(".grid-item");
 const replayBtn = document.querySelector("[data-replay-btn]");
+const lonelyModeInput = document.querySelector('.lonely-mode-checkbox');
 
 
 // ----------- Game Board Data Logging -----------
@@ -45,9 +48,24 @@ gameBoard.forEach((item) => {
 
 replayBtn.addEventListener("click", replayBtnClickHandler)
 
+lonelyModeInput.addEventListener("click", ()=>{
+  if(lonelyModeInput.checked === true){
+    botMode = true
+  }
+  else{
+    botMode = false
+  }
+  
+})
 // ------------------ GAME LOOP --------------------
 
 function PlayGame() {
+  if(lonelyModeInput.disabled === false){
+    lonelyModeInput.disabled = true
+  }
+
+  // testModule()
+  
   const chidOfGridContainer = this.children[0]
   let x = this.children[0].id;
   let x_prev = x
@@ -63,7 +81,7 @@ function PlayGame() {
   }else{
     currentPlayerReverse="X"
   }
-  previousPlayer_data = currentPlayerReverse + "'s Turn :  "
+  let previousPlayer_data = currentPlayerReverse + "'s Turn :  "
   if(!botMode){
     displayOnScreenText(previousPlayer_data);
     gameTitle_His.textContent = currentPlayer + " :  " + x_prev + " --> " + (x = currentPlayer)
@@ -71,6 +89,7 @@ function PlayGame() {
     displayOnScreenText(currentPlayer + "'s Turn :  ")
     gameTitle_His.textContent = currentPlayerReverse + " :  " + x_prev + " --> " + (x = currentPlayer)
   }
+  // gameTitle_His.classList.add("updated")
   
   let grid_Index = this.querySelector(".grid-item");
   grid_Index.innerText = currentPlayer;
@@ -78,12 +97,17 @@ function PlayGame() {
   available_space.splice(y,1)
   // console.log(available_space);
   
+  // gameTitle_His.classList.add("updated")
   
   checkIfGameOver();
   flipPlayerMyGame()
-
+  
   if(!botMode) return
-  BotPlay(x_prev,x)
+  if(available_space == []) return
+  if(!isTheFreakinGameStillGoing) return
+  console.log(available_space);
+  
+  lonelyMode(board, available_space, gridItem, gameTitle_His, currentPlayer, flipPlayerMyGame, checkIfGameOver)
   
 
 }
@@ -94,7 +118,6 @@ function PlayGame() {
 // ------------ ALL FUNCTION ----------
 
 function checkIfGameOver() {
-
   rowWin();
   columnWin();
   diagonalWin();
@@ -102,6 +125,7 @@ function checkIfGameOver() {
   if (winner != ""){
     winningSound.volume = 0.3
     winningSound.play()
+    
     // document.removeEventListener("click",PlayGame)
   }
 
@@ -135,11 +159,12 @@ function rowWin() {
   if(row1 || row2 || row3){
     displayOnScreenText(currentPlayer + " Is The Winner!!!")
   }
-
 }
-// hell yeah girl
 
 function columnWin() {
+  console.log("In C");
+  console.log(board);
+  
   let column1_color = [0,3,6]
   let column2_color = [1,4,7]
   let column3_color = [2,5,8]
@@ -147,13 +172,10 @@ function columnWin() {
   let column2 = ((board[1] == board[4]) && board[7] == board[4]) && (board[4] == "X" || board[4] == "O");
   let column3 = ((board[2] == board[5]) && board[5] == board[8]) && (board[8] == "X" || board[8] == "O");
 
-  // console.log(column1 === true);
   if (column1 == true) {
     winner = board[0];
     isTheFreakinGameStillGoing = false;
     winnerRedDisplay(column1_color)
-    // console.log("Iam the sucker here");
-    // console.log(board);
   } 
   else if (column2 == true) {
     winner = board[1];
@@ -169,11 +191,11 @@ function columnWin() {
   if(column1 || column2 || column3){
     displayOnScreenText(currentPlayer + " Is The Winner!!!")
   }
-  
 }
 
 
 function diagonalWin() {
+  
   let diagonal1_color = [0,4,8]
   let diagonal2_color = [2,4,6]
   let diagonal1 = ((board[0] == board[4]) && board[4] == board[8]) && (board[8] == "X" || board[8] == "O")
@@ -237,25 +259,6 @@ function winnerRedDisplay(arr){
       }
     })
   }
-}
-
-
-function BotPlay(x_prev,x){
-
-  botChooses = available_space[Math.floor(Math.random() * available_space.length)]
-  let babu = available_space.indexOf(parseInt(botChooses));
-  console.log("Bot: "+botChooses);
-  available_space.splice(babu,1);
-  console.log(available_space);
-  gridItem.forEach((item) =>{
-    if(item.id == botChooses){
-      item.innerText = currentPlayer
-    }
-  })
-  gameTitle_His.textContent = currentPlayer + " :  " + botChooses + " --> " + (currentPlayer)
-  flipPlayerMyGame()
-  checkIfGameOver()
-  
 }
 
 
@@ -330,6 +333,8 @@ for (let i = 0; i < 9; i++) {
  gameBoard.forEach((item) => {
   item.addEventListener("click", PlayGame, { once: true });
 });
+
+lonelyModeInput.disabled = false
 // flipPlayerMyGame()
 // flipPlayerMyGame()
 }

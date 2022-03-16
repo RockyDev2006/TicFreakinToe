@@ -10,14 +10,24 @@ body {
   font-family: "Poppins";
 }
 
-.container{
+.container-wrapper{
   color: rgb(241, 241, 241);
   height: 100vh;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   background: 
   linear-gradient(45deg, hsl(244, 100%, 6%),hsl(245, 49%, 21%));
+}
+
+.container{
+  position: relative;
+  /* background-color: rgb(84, 85, 87); */
+  text-align: center;
+  max-width: 1200px;
+  width: 80%;
 }
 .temp-board {
   display: flex;
@@ -69,6 +79,15 @@ body {
   color: rgb(255, 255, 255);
   opacity: .7;
   font-size: 2.8rem;
+  animation: scaleText;
+  animation-duration: 1s;
+}
+
+
+#game-title-history{
+  color: rgb(255, 255, 255);
+  opacity: .7;
+  font-size: 2.8rem;
 }
 
 .show-the-text{
@@ -101,6 +120,36 @@ body {
   background-color: hsl(209, 91%, 50%);
 }
 
+.lonely-mode{
+  position: absolute;
+  top: 7rem;
+  left: 1rem;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  
+}
+
+.lonely-mode > input{
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+}
+
+#lonely-mode-text{
+  cursor: pointer;
+  margin-left: .5rem;
+  user-select: none;
+}
+
+.lonely-mode:hover{
+  color: hsl(209, 91%, 80%);
+  transform: scale(1.03);
+  transition: all .1s ease-in;
+}
+
+
+
 @keyframes scale{
   0%{
     font-size: 1rem;
@@ -110,5 +159,16 @@ body {
   }
   100%{
     font-size: 3rem;
+  }
+}
+
+@keyframes scaleText{
+  0%{
+    font-size: 0rem;
+    transform: scale(0);
+  }
+  100%{
+    /* font-size: 2.8rem; */
+    transform: scale(1);
   }
 }
