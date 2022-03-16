@@ -15,9 +15,13 @@ const marking2 = document.querySelector("#marking2-sound")
 const gridItem = document.querySelectorAll(".grid-item");
 const replayBtn = document.querySelector("[data-replay-btn]");
 
+const socket = io()
 
 // ----------- Game Board Data Logging -----------
-
+socket.on('chat-message', data=> {
+    console.log(data);
+    temp(data)
+});
 let board = [
   gameBoard[0].innerText,
   gameBoard[1].innerText,
@@ -30,7 +34,6 @@ let board = [
   gameBoard[8].innerText,
 ];
 
-// console.log(board);
 gameBoard.forEach((item) => {
   item.addEventListener("click", PlayGame, { once: true });
 });
@@ -47,43 +50,94 @@ replayBtn.addEventListener("click", replayBtnClickHandler)
 
 // ------------------ GAME LOOP --------------------
 
+function temp(data){
+    gridItem.forEach(item =>{
+        if(item.id == data.position){
+            item.innerText = data.currentPlayer
+            item.classList.add("marked")
+            // marking2.play()
+          }
+        })
+        
+        //   const chidOfGridContainer = this.children[0]
+        // let x = this.children[0].id;
+        // let x_prev = x
+        
+        
+    let y = available_space.indexOf(data.position);
+    board[parseInt(data.position)] = data.currentPlayer;
+    console.log(board);
+//   if(currentPlayer == "X"){
+//       currentPlayerReverse = "O"
+//   }else{
+//       currentPlayerReverse="X"
+//   }
+//   previousPlayer_data = currentPlayerReverse + "'s Turn :  "
+//   if(!botMode){
+//       displayOnScreenText(previousPlayer_data);
+//     gameTitle_His.textContent = currentPlayer + " :  " + x_prev + " --> " + (x = currentPlayer)
+// }else if(botMode){
+//     displayOnScreenText(currentPlayer + "'s Turn :  ")
+//     gameTitle_His.textContent = currentPlayerReverse + " :  " + x_prev + " --> " + (x = currentPlayer)
+// }
+  
+// let grid_Index = this.querySelector(".grid-item");
+// grid_Index.innerText = currentPlayer;
+// chidOfGridContainer.classList.add("marked")
+
+
+available_space.splice(y,1)
+
+
+checkIfGameOver();
+// flipPlayerMyGame()
+if(data.currentPlayer === "X"){
+  currentPlayer = "O"
+}
+else{
+    currentPlayer = "X"
+  }
+
+}
+
 function PlayGame() {
   const chidOfGridContainer = this.children[0]
   let x = this.children[0].id;
   let x_prev = x
-  // console.log(chidOfGridContainer);
+
   
   let y = available_space.indexOf(parseInt(x));
-  // console.log(x);
   board[parseInt(x)] = currentPlayer;
-  // marking1.play()
+  socket.emit('send-chat-message', {currentPlayer:currentPlayer, position : parseInt(x)})
   marking2.play()
+  console.log("testing");
   if(currentPlayer == "X"){
-    currentPlayerReverse = "O"
+      currentPlayerReverse = "O"
   }else{
-    currentPlayerReverse="X"
+      currentPlayerReverse="X"
   }
   previousPlayer_data = currentPlayerReverse + "'s Turn :  "
   if(!botMode){
-    displayOnScreenText(previousPlayer_data);
+      displayOnScreenText(previousPlayer_data);
     gameTitle_His.textContent = currentPlayer + " :  " + x_prev + " --> " + (x = currentPlayer)
-  }else if(botMode){
+}else if(botMode){
     displayOnScreenText(currentPlayer + "'s Turn :  ")
     gameTitle_His.textContent = currentPlayerReverse + " :  " + x_prev + " --> " + (x = currentPlayer)
-  }
+}
   
-  let grid_Index = this.querySelector(".grid-item");
-  grid_Index.innerText = currentPlayer;
-  chidOfGridContainer.classList.add("marked")
-  available_space.splice(y,1)
-  // console.log(available_space);
-  
-  
-  checkIfGameOver();
-  flipPlayerMyGame()
+let grid_Index = this.querySelector(".grid-item");
+grid_Index.innerText = currentPlayer;
+chidOfGridContainer.classList.add("marked")
 
-  if(!botMode) return
-  BotPlay(x_prev,x)
+
+available_space.splice(y,1)
+
+
+checkIfGameOver();
+flipPlayerMyGame()
+
+if(!botMode) return
+BotPlay(x_prev,x)
   
 
 }
@@ -99,11 +153,10 @@ function checkIfGameOver() {
   columnWin();
   diagonalWin();
   tie();
-  if (winner != ""){
-    winningSound.volume = 0.3
-    winningSound.play()
-    // document.removeEventListener("click",PlayGame)
-  }
+//   if (winner != ""){
+//     winningSound.volume = 0.3
+//     winningSound.play()
+//   }
 
 }
 
@@ -137,7 +190,6 @@ function rowWin() {
   }
 
 }
-// hell yeah girl
 
 function columnWin() {
   let column1_color = [0,3,6]
@@ -147,13 +199,10 @@ function columnWin() {
   let column2 = ((board[1] == board[4]) && board[7] == board[4]) && (board[4] == "X" || board[4] == "O");
   let column3 = ((board[2] == board[5]) && board[5] == board[8]) && (board[8] == "X" || board[8] == "O");
 
-  // console.log(column1 === true);
   if (column1 == true) {
     winner = board[0];
     isTheFreakinGameStillGoing = false;
     winnerRedDisplay(column1_color)
-    // console.log("Iam the sucker here");
-    // console.log(board);
   } 
   else if (column2 == true) {
     winner = board[1];
@@ -216,20 +265,16 @@ function flipPlayerMyGame(){
   else{
     currentPlayer = "X"
   }
-  // console.log("Player Fliped"+ currentPlayer);
 
 }
 
 
 function displayOnScreenText(string){
   gameTitle.textContent = string
-  // console.log("string " + string);
 }
 
 
 function winnerRedDisplay(arr){
-  // console.log("2here"+isTheFreakinGameStillGoing);
-  // if (isTheFreakinGameStillGoing) return
   for (let i = 0; i < arr.length; i++) {
     gameBoard.forEach((item) => {
       if(item.children[0].id == arr[i]){
@@ -260,30 +305,24 @@ function BotPlay(x_prev,x){
 
 
 function showTurn(){
-  // console.log("hey");
   if(currentPlayer === "X"){
     this.childNodes[1].classList.add("grid-item-mark-indicator-x")
   }else{
     this.childNodes[1].classList.add("grid-item-mark-indicator-o")
   }
-  // this.childNodes[1].innerText=currentPlayer
   
 }
 
 
 function removeTurn(){
-  // console.log("bye");s
   if(currentPlayer === "X"){
-    // console.log(this.classList.value.includes("grid-item-mark-indicator-x"));
     
     if(this.childNodes[1].classList.value.includes("grid-item-mark-indicator-x")){
       this.childNodes[1].classList.remove("grid-item-mark-indicator-x")
-      // this.childNodes[1].innerText=""
     }
   }else{
     if(this.childNodes[1].classList.value.includes("grid-item-mark-indicator-o")){
       this.childNodes[1].classList.remove("grid-item-mark-indicator-o")
-      // this.childNodes[1].innerText=""
     }
   }
   
@@ -292,7 +331,6 @@ function removeTurn(){
 
 
 function replayBtnClickHandler(){
-//  console.log("replay btn clicked");
  currentPlayer = "X"
  winner = ""
  currentPlayerReverse = ""
@@ -303,10 +341,8 @@ for (let i = 0; i < 9; i++) {
   board[i] = ""
 }
  isTheFreakinGameStillGoing = true
-//  console.log("1here"+isTheFreakinGameStillGoing);
 
  gridItem.forEach(element => {
-  //  element.classList=""
   element.innerText = ""
   if(element.classList.contains("marked")){
     element.classList.remove("marked")
@@ -330,6 +366,4 @@ for (let i = 0; i < 9; i++) {
  gameBoard.forEach((item) => {
   item.addEventListener("click", PlayGame, { once: true });
 });
-// flipPlayerMyGame()
-// flipPlayerMyGame()
 }
