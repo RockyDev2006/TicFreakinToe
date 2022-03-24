@@ -317,6 +317,7 @@ for (let i = 0; i < 9; i++) {
 
  gameBoard.forEach((item) => {
   item.addEventListener("click", PlayGame, { once: true });
+  item.style.cursor = "pointer"
 });
 
 lonelyModeInput.disabled = false
