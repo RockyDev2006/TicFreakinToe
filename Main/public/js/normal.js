@@ -1,3 +1,5 @@
+// Branch :- rancho/quality-fixes
+
 import lonelyMode from "./lonelyMode.js";
 
 // ---------------Variables---------------
@@ -84,6 +86,7 @@ function PlayGame() {
 
   
   marking2.play()
+
   if(currentPlayer == "X"){
     currentPlayerReverse = "O"
   }else{
@@ -97,15 +100,12 @@ function PlayGame() {
     displayOnScreenText(currentPlayer + "'s Turn :  ")
     gameTitle_His.textContent = currentPlayerReverse + " :  " + x_prev + " --> " + (x = currentPlayer)
   }
-  // gameTitle_His.classList.add("updated")
   
   let grid_Index = this.querySelector(".grid-item");
   grid_Index.innerText = currentPlayer;
   chidOfGridContainer.classList.add("marked")
   available_space.splice(y,1)
-  // console.log(available_space);
   
-  // gameTitle_His.classList.add("updated")
   
   checkIfGameOver();
   flipPlayerMyGame()
@@ -132,6 +132,10 @@ function checkIfGameOver() {
   if (winner != ""){
     winningSound.volume = 0.3
     winningSound.play()
+    gameBoard.forEach((item) => {
+      item.removeEventListener("click", PlayGame, { once: true });
+      item.style.cursor = "not-allowed"
+    });
   }
 
 }
@@ -264,6 +268,7 @@ function winnerRedDisplay(arr){
 
 
 function showTurn(){
+  if (!isTheFreakinGameStillGoing) return
   if(currentPlayer === "X"){
     this.childNodes[1].classList.add("grid-item-mark-indicator-x")
   }else{
@@ -324,5 +329,8 @@ for (let i = 0; i < 9; i++) {
 
  gameBoard.forEach((item) => {
   item.addEventListener("click", PlayGame, { once: true });
+  item.style.cursor = "pointer"
 });
+
+lonelyModeInput.disabled = false
 }
