@@ -8,11 +8,16 @@
     <title>Tic Freakin Toe</title>
   </head>
   <body>
+    <div class="container-wrapper">
     <div class="container">
       <audio id="winning-sound" src="./Sound Effects/winning_sound.wav"></audio>
       <audio id="marking1-sound" src="./Sound Effects/markPos1.wav"></audio>
       <audio id="marking2-sound" src="./Sound Effects/markPos2.wav"></audio>
-
+      <div class="lonely-mode">
+        <input class="lonely-mode-checkbox" 
+        id="lonely" type="checkbox">
+        <label id="lonely-mode-text" for="lonely">Lonely Mode</label>
+      </div>
       <div class="room-container" >
         <form action="./enterRoom.html">
           <button type="submit">Enter Room</button>
@@ -66,6 +71,7 @@
       </div>
     </div>
   </div>
+</div>
   </body>
-  <script src="./js/normal.js" ></script>
+  <script type="module" src="./js/normal.js" ></script>
 </html>

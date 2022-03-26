@@ -1,3 +1,5 @@
+import lonelyMode from "./lonelyMode.js";
+
 // ---------------Variables---------------
 
 let isTheFreakinGameStillGoing = true;
@@ -14,6 +16,7 @@ const marking1 = document.querySelector("#marking1-sound")
 const marking2 = document.querySelector("#marking2-sound")
 const gridItem = document.querySelectorAll(".grid-item");
 const replayBtn = document.querySelector("[data-replay-btn]");
+const lonelyModeInput = document.querySelector('.lonely-mode-checkbox');
 const notAllowedScreen = document.querySelector('.not-allowed');
 
 
@@ -52,12 +55,24 @@ gameBoard.forEach((item) => {
 
 replayBtn.addEventListener("click", replayBtnClickHandler)
 
+lonelyModeInput.addEventListener("click", ()=>{
+  if(lonelyModeInput.checked === true){
+    botMode = true
+  }
+  else{
+    botMode = false
+  }
+  
+})
 
 // ------------------ GAME LOOP --------------------
 
 
 function PlayGame() {
   
+  if(lonelyModeInput.disabled === false){
+    lonelyModeInput.disabled = true
+  }
   const chidOfGridContainer = this.children[0]
   let x = this.children[0].id;
   let x_prev = x
@@ -74,7 +89,7 @@ function PlayGame() {
   }else{
       currentPlayerReverse="X"
   }
-  previousPlayer_data = currentPlayerReverse + "'s Turn :  "
+  let previousPlayer_data = currentPlayerReverse + "'s Turn :  "
   if(!botMode){
       displayOnScreenText(previousPlayer_data);
     gameTitle_His.textContent = currentPlayer + " :  " + (parseInt(x)+1) + " --> " + (x = currentPlayer)
@@ -95,9 +110,11 @@ checkIfGameOver();
 flipPlayerMyGame()
 
 if(!botMode) return
-BotPlay(x_prev,x)
-  
+if(available_space == []) return
+if(!isTheFreakinGameStillGoing) return
+console.log(available_space);
 
+lonelyMode(board, available_space, gridItem, gameTitle_His, currentPlayer, flipPlayerMyGame, checkIfGameOver)
 }
 
 

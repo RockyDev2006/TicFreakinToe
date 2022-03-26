@@ -98,12 +98,6 @@ gameBoard.forEach((item) => {
   item.addEventListener("mouseleave",removeTurn)
 })
 
-gameBoard.forEach((item) => {
-  item.addEventListener("change",()=>{console.log("I got Called")
-  })
-})
-
-
 
 replayBtn.addEventListener("click", replayBtnClickHandler)
 
