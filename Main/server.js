@@ -1,33 +1,61 @@
 const express = require('express');
+const path = require('path');
 const app = express();
+const router = express.Router()
 const http = require('http');
 const server = http.createServer(app);
+const {userJoin, removeUser} = require('./utils/users')
 const socketio = require('socket.io');
 const io = socketio(server);
-app.use(express.static('public'))
+app.use(express.static(path.join(__dirname,'public')))
 
-// app.set('view engine', 'ejs')
-app.get('/', (req, res) => {
-  // res.render('index');
-  // res.send("lol")
-  // res.sendFile('index.ejs')
-  res.sendFile(__dirname + '/public/ticFreakinToe.html')
-});
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  socket.emit('helpMe')
+  socket.emit('message',"Server Here")
+  socket.on('joinRoom', ({roomName})=>{
+    socket.emit('message',"Join Room Here")
+    const {user,overpowered, notSelected} = userJoin(socket.id, roomName)
+    
+    if(user == undefined){
+      socket.emit('message', "Room Is Full Bro")
+      socket.emit('whatToDo')
+    }
+    if(user != undefined && user != 0){
+    socket.join(user.roomName)
   
-  socket.on('play', msg =>{
-    socket.emit('lol', 'satyam')
+    socket.on('playMove',(data)=>{
+      socket.broadcast.to(user.roomName).emit('markPos',data)
+    })
+
+    socket.to(overpowered).emit('firstTurn',notSelected)
+
+    socket.on('next', notSelected=>{
+      socket.to(notSelected).emit('secondTurn')
+    })
+
+    socket.on('resetOnlineGame', ()=>{
+      io.to(user.roomName).emit('resetOnDis')
+    })
+
+    // socket.to(notSelected).emit('secondTurn',overpowered)
+
+    socket.on("disconnect",()=>{
+      removeUser(socket.id)
+      socket.broadcast.to(user.roomName).emit('resetOnDis')
+    })
+
+    socket.on("replay",()=>{
+      socket.broadcast.emit("requestReplay")
+    })
+
+
+  }
   })
-  socket.on('send-chat-message', message => {
-    socket.broadcast.emit('chat-message',message)
-  });
+  
 });
 
-// server.listen(3000, () => {
-//   console.log('listening on *:3000');
-// });
+
 
 const PORT = process.env.PORT || 3000;
 

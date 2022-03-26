@@ -5,6 +5,12 @@ let currentPlayer = "X";
 let winner = "";
 let currentPlayerReverse = ""
 let botMode = false
+let yourTURN = true
+let somefirstState = false
+let firstTurn = false
+let reseted = false
+let allowed = true
+let twoPlayerMode = true
 let available_space = [0,1,2,3,4,5,6,7,8]
 const gameBoard = document.querySelectorAll(".grid-item-container");
 const gameTitle = document.querySelector("#game-title")
@@ -14,14 +20,60 @@ const marking1 = document.querySelector("#marking1-sound")
 const marking2 = document.querySelector("#marking2-sound")
 const gridItem = document.querySelectorAll(".grid-item");
 const replayBtn = document.querySelector("[data-replay-btn]");
+const notAllowedScreen = document.querySelector('.not-allowed');
 
 const socket = io()
 
+console.log("Real Brain:- Hi There")
+replayBtn.textContent = "Request Replay"
+
 // ----------- Game Board Data Logging -----------
-socket.on('chat-message', data=> {
+
+socket.on('markPos', data=> {
     console.log(data);
     temp(data)
 });
+
+socket.on('firstTurn', (notSelected)=> {
+    firstTurn = true
+    somefirstState = true
+    currentPlayer = "X"
+    displayOnScreenText("Your Chance")
+    socket.emit('next',notSelected)
+    gameBoard.forEach(item=>{
+      item.style.cursor = "pointer"
+    })
+});
+  
+socket.on('secondTurn', ()=> {
+    firstTurn = false
+    displayOnScreenText("Opponent's Chance:")
+    currentPlayer = "O"
+    gameBoard.forEach(item=>{
+      item.style.cursor = "not-allowed"
+    })
+});
+
+socket.on('resetOnDis', ()=> {
+  location.reload()
+});
+
+socket.on('requestReplay', ()=> {
+  if(reseted) return
+  replayBtn.textContent = "Would You Like To Replay"
+  
+  
+});
+
+socket.on('whatToDo', ()=> {
+  gameBoard.forEach(item=>{
+    item.removeEventListener("click", PlayGame)
+    item.style.cursor = "not-allowed"
+    allowed = false
+    notAllowedScreen.style.display = "grid"
+  })
+});
+
 let board = [
   gameBoard[0].innerText,
   gameBoard[1].innerText,
@@ -35,7 +87,7 @@ let board = [
 ];
 
 gameBoard.forEach((item) => {
-  item.addEventListener("click", PlayGame, { once: true });
+  item.addEventListener("click", PlayGame);
 });
 
 gameBoard.forEach((item) => {
@@ -46,11 +98,27 @@ gameBoard.forEach((item) => {
   item.addEventListener("mouseleave",removeTurn)
 })
 
+gameBoard.forEach((item) => {
+  item.addEventListener("change",()=>{console.log("I got Called")
+  })
+})
+
+
+
 replayBtn.addEventListener("click", replayBtnClickHandler)
+
+
 
 // ------------------ GAME LOOP --------------------
 
 function temp(data){
+  yourTURN = true
+  firstTurn = true
+  displayOnScreenText("Your Turn: ")
+  gameBoard.forEach(item=>{
+    item.style.cursor = "pointer"
+  })
+  
     gridItem.forEach(item =>{
         if(item.id == data.position){
             item.innerText = data.currentPlayer
@@ -59,38 +127,25 @@ function temp(data){
           }
         })
         
-        //   const chidOfGridContainer = this.children[0]
-        // let x = this.children[0].id;
-        // let x_prev = x
         
         
     let y = available_space.indexOf(data.position);
     board[parseInt(data.position)] = data.currentPlayer;
     console.log(board);
-//   if(currentPlayer == "X"){
-//       currentPlayerReverse = "O"
-//   }else{
-//       currentPlayerReverse="X"
-//   }
-//   previousPlayer_data = currentPlayerReverse + "'s Turn :  "
-//   if(!botMode){
-//       displayOnScreenText(previousPlayer_data);
-//     gameTitle_His.textContent = currentPlayer + " :  " + x_prev + " --> " + (x = currentPlayer)
-// }else if(botMode){
-//     displayOnScreenText(currentPlayer + "'s Turn :  ")
-//     gameTitle_His.textContent = currentPlayerReverse + " :  " + x_prev + " --> " + (x = currentPlayer)
-// }
-  
-// let grid_Index = this.querySelector(".grid-item");
-// grid_Index.innerText = currentPlayer;
-// chidOfGridContainer.classList.add("marked")
+  if(data.currentPlayer == "X"){
+      currentPlayer = "O"
+  }else{
+      currentPlayer="X"
+  }
+
+    gameTitle_His.textContent = data.currentPlayer + " :  " + (data.position +1)+ " --> " + (data.currentPlayer)
+
 
 
 available_space.splice(y,1)
 
 
 checkIfGameOver();
-// flipPlayerMyGame()
 if(data.currentPlayer === "X"){
   currentPlayer = "O"
 }
@@ -101,6 +156,10 @@ else{
 }
 
 function PlayGame() {
+  
+  if(!firstTurn) return
+  if(!yourTURN) return
+  console.log("play Game");
   const chidOfGridContainer = this.children[0]
   let x = this.children[0].id;
   let x_prev = x
@@ -108,21 +167,29 @@ function PlayGame() {
   
   let y = available_space.indexOf(parseInt(x));
   board[parseInt(x)] = currentPlayer;
-  socket.emit('send-chat-message', {currentPlayer:currentPlayer, position : parseInt(x)})
+
+  socket.emit('playMove', {currentPlayer:currentPlayer, position : parseInt(x)})
+  
+  yourTURN = false
+  if(!yourTURN){
+    gameBoard.forEach(item=>{
+      item.style.cursor = "not-allowed"
+    })
+  }
+  
   marking2.play()
-  console.log("testing");
   if(currentPlayer == "X"){
-      currentPlayerReverse = "O"
+    currentPlayerReverse = "O"
   }else{
       currentPlayerReverse="X"
   }
   previousPlayer_data = currentPlayerReverse + "'s Turn :  "
   if(!botMode){
       displayOnScreenText(previousPlayer_data);
-    gameTitle_His.textContent = currentPlayer + " :  " + x_prev + " --> " + (x = currentPlayer)
+    gameTitle_His.textContent = currentPlayer + " :  " + (parseInt(x)+1) + " --> " + (x = currentPlayer)
 }else if(botMode){
     displayOnScreenText(currentPlayer + "'s Turn :  ")
-    gameTitle_His.textContent = currentPlayerReverse + " :  " + x_prev + " --> " + (x = currentPlayer)
+    gameTitle_His.textContent = currentPlayerReverse + " :  " + (parseInt(x)+1) + " --> " + (x = currentPlayer)
 }
   
 let grid_Index = this.querySelector(".grid-item");
@@ -153,10 +220,10 @@ function checkIfGameOver() {
   columnWin();
   diagonalWin();
   tie();
-//   if (winner != ""){
-//     winningSound.volume = 0.3
-//     winningSound.play()
-//   }
+  if (winner != ""){
+    winningSound.volume = 0.3
+    winningSound.play()
+  }
 
 }
 
@@ -186,7 +253,7 @@ function rowWin() {
   }
 
   if(row1 || row2 || row3){
-    displayOnScreenText(currentPlayer + " Is The Winner!!!")
+    displayOnScreenText(winner + " Is The Winner!!!")
   }
 
 }
@@ -216,7 +283,7 @@ function columnWin() {
   }
   
   if(column1 || column2 || column3){
-    displayOnScreenText(currentPlayer + " Is The Winner!!!")
+    displayOnScreenText(winner + " Is The Winner!!!")
   }
   
 }
@@ -241,7 +308,7 @@ function diagonalWin() {
   }
 
   if(diagonal1 || diagonal2){
-    displayOnScreenText(currentPlayer + " Is The Winner!!!")
+    displayOnScreenText(winner + " Is The Winner!!!")
   }
 
 }
@@ -305,6 +372,8 @@ function BotPlay(x_prev,x){
 
 
 function showTurn(){
+  if(!allowed) return
+  if(!yourTURN) return
   if(currentPlayer === "X"){
     this.childNodes[1].classList.add("grid-item-mark-indicator-x")
   }else{
@@ -331,39 +400,10 @@ function removeTurn(){
 
 
 function replayBtnClickHandler(){
- currentPlayer = "X"
- winner = ""
- currentPlayerReverse = ""
- available_space = [0,1,2,3,4,5,6,7,8]
- board = [
-];
-for (let i = 0; i < 9; i++) {
-  board[i] = ""
+  if(this.innerText == "Would You Like To Replay"){
+    socket.emit('resetOnlineGame')
 }
- isTheFreakinGameStillGoing = true
-
- gridItem.forEach(element => {
-  element.innerText = ""
-  if(element.classList.contains("marked")){
-    element.classList.remove("marked")
-  }
-  if(element.classList.contains("grid-item-mark-indicator-x")){
-    element.classList.remove("grid-item-mark-indicator-x")
-  }
-  else{
-    element.classList.remove("grid-item-mark-indicator-o")
-  }
- });
- gameBoard.forEach(element =>{
-   if(element.classList.contains("hell")){
-     element.classList.remove("hell")
-   }
- })
-
- displayOnScreenText(currentPlayer + "'s" + " Turn:")
- gameTitle_His.innerText = ""
-
- gameBoard.forEach((item) => {
-  item.addEventListener("click", PlayGame, { once: true });
-});
+else{
+  socket.emit('replay')
+}
 }
