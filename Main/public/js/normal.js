@@ -17,9 +17,10 @@ const marking2 = document.querySelector("#marking2-sound")
 const gridItem = document.querySelectorAll(".grid-item");
 const replayBtn = document.querySelector("[data-replay-btn]");
 const lonelyModeInput = document.querySelector('.lonely-mode-checkbox');
+const notAllowedScreen = document.querySelector('.not-allowed');
 
 
-// ----------- Game Board Data Logging -----------
+console.log("Normal:- Hi There");
 
 let board = [
   gameBoard[0].innerText,
@@ -33,9 +34,8 @@ let board = [
   gameBoard[8].innerText,
 ];
 
-// console.log(board);
 gameBoard.forEach((item) => {
-  item.addEventListener("click", PlayGame, { once: true });
+  item.addEventListener("click", PlayGame);
 });
 
 gameBoard.forEach((item) => {
@@ -45,6 +45,13 @@ gameBoard.forEach((item) => {
 gameBoard.forEach((item) => {
   item.addEventListener("mouseleave",removeTurn)
 })
+
+gameBoard.forEach((item) => {
+  item.addEventListener("change",()=>{console.log("I got Called")
+  })
+})
+
+
 
 replayBtn.addEventListener("click", replayBtnClickHandler)
 
@@ -57,35 +64,36 @@ lonelyModeInput.addEventListener("click", ()=>{
   }
   
 })
+
 // ------------------ GAME LOOP --------------------
 
+
 function PlayGame() {
+  
   if(lonelyModeInput.disabled === false){
     lonelyModeInput.disabled = true
   }
-
-  // testModule()
-  
   const chidOfGridContainer = this.children[0]
   let x = this.children[0].id;
   let x_prev = x
-  // console.log(chidOfGridContainer);
+
   
   let y = available_space.indexOf(parseInt(x));
-  // console.log(x);
   board[parseInt(x)] = currentPlayer;
-  // marking1.play()
+
+
+  
   marking2.play()
   if(currentPlayer == "X"){
     currentPlayerReverse = "O"
   }else{
-    currentPlayerReverse="X"
+      currentPlayerReverse="X"
   }
   let previousPlayer_data = currentPlayerReverse + "'s Turn :  "
   if(!botMode){
-    displayOnScreenText(previousPlayer_data);
-    gameTitle_His.textContent = currentPlayer + " :  " + x_prev + " --> " + (x = currentPlayer)
-  }else if(botMode){
+      displayOnScreenText(previousPlayer_data);
+    gameTitle_His.textContent = currentPlayer + " :  " + (parseInt(x)+1) + " --> " + (x = currentPlayer)
+}else if(botMode){
     displayOnScreenText(currentPlayer + "'s Turn :  ")
     gameTitle_His.textContent = currentPlayerReverse + " :  " + x_prev + " --> " + (x = currentPlayer)
   }
@@ -109,7 +117,6 @@ function PlayGame() {
   
   lonelyMode(board, available_space, gridItem, gameTitle_His, currentPlayer, flipPlayerMyGame, checkIfGameOver)
   
-
 }
 
 
@@ -125,8 +132,6 @@ function checkIfGameOver() {
   if (winner != ""){
     winningSound.volume = 0.3
     winningSound.play()
-    
-    // document.removeEventListener("click",PlayGame)
   }
 
 }
@@ -157,7 +162,7 @@ function rowWin() {
   }
 
   if(row1 || row2 || row3){
-    displayOnScreenText(currentPlayer + " Is The Winner!!!")
+    displayOnScreenText(winner + " Is The Winner!!!")
   }
 }
 
@@ -189,7 +194,7 @@ function columnWin() {
   }
   
   if(column1 || column2 || column3){
-    displayOnScreenText(currentPlayer + " Is The Winner!!!")
+    displayOnScreenText(winner + " Is The Winner!!!")
   }
 }
 
@@ -214,7 +219,7 @@ function diagonalWin() {
   }
 
   if(diagonal1 || diagonal2){
-    displayOnScreenText(currentPlayer + " Is The Winner!!!")
+    displayOnScreenText(winner + " Is The Winner!!!")
   }
 
 }
@@ -238,20 +243,16 @@ function flipPlayerMyGame(){
   else{
     currentPlayer = "X"
   }
-  // console.log("Player Fliped"+ currentPlayer);
 
 }
 
 
 function displayOnScreenText(string){
   gameTitle.textContent = string
-  // console.log("string " + string);
 }
 
 
 function winnerRedDisplay(arr){
-  // console.log("2here"+isTheFreakinGameStillGoing);
-  // if (isTheFreakinGameStillGoing) return
   for (let i = 0; i < arr.length; i++) {
     gameBoard.forEach((item) => {
       if(item.children[0].id == arr[i]){
@@ -263,30 +264,24 @@ function winnerRedDisplay(arr){
 
 
 function showTurn(){
-  // console.log("hey");
   if(currentPlayer === "X"){
     this.childNodes[1].classList.add("grid-item-mark-indicator-x")
   }else{
     this.childNodes[1].classList.add("grid-item-mark-indicator-o")
   }
-  // this.childNodes[1].innerText=currentPlayer
   
 }
 
 
 function removeTurn(){
-  // console.log("bye");s
   if(currentPlayer === "X"){
-    // console.log(this.classList.value.includes("grid-item-mark-indicator-x"));
     
     if(this.childNodes[1].classList.value.includes("grid-item-mark-indicator-x")){
       this.childNodes[1].classList.remove("grid-item-mark-indicator-x")
-      // this.childNodes[1].innerText=""
     }
   }else{
     if(this.childNodes[1].classList.value.includes("grid-item-mark-indicator-o")){
       this.childNodes[1].classList.remove("grid-item-mark-indicator-o")
-      // this.childNodes[1].innerText=""
     }
   }
   
@@ -295,7 +290,6 @@ function removeTurn(){
 
 
 function replayBtnClickHandler(){
-//  console.log("replay btn clicked");
  currentPlayer = "X"
  winner = ""
  currentPlayerReverse = ""
@@ -306,10 +300,8 @@ for (let i = 0; i < 9; i++) {
   board[i] = ""
 }
  isTheFreakinGameStillGoing = true
-//  console.log("1here"+isTheFreakinGameStillGoing);
 
  gridItem.forEach(element => {
-  //  element.classList=""
   element.innerText = ""
   if(element.classList.contains("marked")){
     element.classList.remove("marked")
@@ -333,8 +325,4 @@ for (let i = 0; i < 9; i++) {
  gameBoard.forEach((item) => {
   item.addEventListener("click", PlayGame, { once: true });
 });
-
-lonelyModeInput.disabled = false
-// flipPlayerMyGame()
-// flipPlayerMyGame()
 }

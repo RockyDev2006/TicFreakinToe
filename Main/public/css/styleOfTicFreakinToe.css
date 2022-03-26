@@ -149,6 +149,31 @@ body {
 }
 
 
+.room-container{
+  position: absolute;
+  top: 3rem;
+  left: 5rem;
+}
+
+.not-allowed{
+  position: absolute;
+  display: none;
+  place-items: center;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  color: white;
+}
+
+.not-allowed p {
+  user-select: none;
+}
+
+
 
 @keyframes scale{
   0%{

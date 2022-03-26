@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/styleOfTicFreakinToe.css" />
+    <title>Tic Freakin Toe</title>
+  </head>
+  <body>
+    <div class="container-wrapper">
+    <div class="container">
+      <audio id="winning-sound" src="./Sound Effects/winning_sound.wav"></audio>
+      <audio id="marking1-sound" src="./Sound Effects/markPos1.wav"></audio>
+      <audio id="marking2-sound" src="./Sound Effects/markPos2.wav"></audio>
+
+      <div class="room-container" >
+        <form action="./enterRoom.html">
+          <button type="submit">Enter Room</button>
+      </form>
+      </div>
+      <div class="not-allowed">
+        <p>| Room Is Full (Exit) |</p>
+      </div>
+      <div class="show-the-text">
+        <p id="game-title-history"></p>
+        <p id="game-title">X's Turn: </p>
+      </div>
+      <div class="hero">
+        <div class="grid-container">
+          <div class="temp-board">
+          <div class="grid-item-container">
+            <div id="0" class="grid-item"></div>
+          </div>
+          <div class="grid-item-container">
+            <div id="1" class="grid-item"></div>
+          </div>
+          <div class="grid-item-container">
+            <div id="2" class="grid-item"></div>
+          </div>
+        </div>
+        <div class="temp-board">
+          <div class="grid-item-container">
+            <div id="3" class="grid-item"></div>
+          </div>
+          <div class="grid-item-container">
+            <div id="4" class="grid-item"></div>
+          </div>
+          <div class="grid-item-container">
+            <div id="5" class="grid-item"></div>
+          </div>
+        </div>
+        <div class="temp-board">
+          <div class="grid-item-container">
+            <div id="6" class="grid-item"></div>
+          </div>
+          <div class="grid-item-container">
+            <div id="7" class="grid-item"></div>
+          </div>
+          <div class="grid-item-container">
+            <div id="8" class="grid-item"></div>
+          </div>
+        </div>
+      </div>
+      <div class="replay-btn-container">
+        <button class="replay-btn" data-replay-btn>Restart</button>
+      </div>
+    </div>
+  </div>
+</div>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.3/qs.min.js" integrity="sha512-juaCj8zi594KHQqb92foyp87mCSriYjw3BcTHaXsAn4pEB1YWh+z+XQScMxIxzsjfM4BeVFV3Ij113lIjWiC2w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/socket.io/socket.io.js" ></script>
+  <script src="./js/brainOfTicFreakinToe.js" ></script>
+  <script src="./js/client.js" ></script>
+</html>
