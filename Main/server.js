@@ -52,13 +52,10 @@ io.on('connection', (socket) => {
     socket.on("replay",()=>{
       socket.broadcast.emit("requestReplay")
     })
-
-
   }
   })
   
 });
-
 
 
 const PORT = process.env.PORT || 3000;
