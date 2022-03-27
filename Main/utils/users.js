@@ -1,4 +1,5 @@
 const users =[]
+
 let overpowered = ""
 let notSelected
 function userJoin(id, roomName){
@@ -6,8 +7,8 @@ function userJoin(id, roomName){
     if(users.length > 1) {
         return 0
     }
-    
     const user = {id, roomName}
+
     users.push(user)
     
     if(users.length == 2){

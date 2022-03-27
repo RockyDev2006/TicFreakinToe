@@ -1,4 +1,4 @@
-// Branch :- rancho/quality-fixes
+// Branch :- rancho/styling
 
 import lonelyMode from "./lonelyMode.js";
 
@@ -9,7 +9,9 @@ let currentPlayer = "X";
 let winner = "";
 let currentPlayerReverse = ""
 let botMode = false
+let USER_NAME = ""
 let available_space = [0,1,2,3,4,5,6,7,8]
+let lonelyModeInputDisabled = false
 const gameBoard = document.querySelectorAll(".grid-item-container");
 const gameTitle = document.querySelector("#game-title")
 const gameTitle_His = document.querySelector("#game-title-history")
@@ -20,9 +22,11 @@ const gridItem = document.querySelectorAll(".grid-item");
 const replayBtn = document.querySelector("[data-replay-btn]");
 const lonelyModeInput = document.querySelector('.lonely-mode-checkbox');
 const notAllowedScreen = document.querySelector('.not-allowed');
+const gameOverScreen = document.querySelector('#game-over-screen');
+const toggleCheckmark = document.querySelector('#forLonelyMode');
 
-
-console.log("Normal:- Hi There");
+USER_NAME = prompt("Enter Your Name: ")
+sessionStorage.setItem("USERNAME", USER_NAME);
 
 let board = [
   gameBoard[0].innerText,
@@ -37,7 +41,7 @@ let board = [
 ];
 
 gameBoard.forEach((item) => {
-  item.addEventListener("click", PlayGame);
+  item.addEventListener("click", PlayGame,{once:true});
 });
 
 gameBoard.forEach((item) => {
@@ -55,17 +59,24 @@ gameBoard.forEach((item) => {
 
 
 
-replayBtn.addEventListener("click", replayBtnClickHandler)
-
-lonelyModeInput.addEventListener("click", ()=>{
+toggleCheckmark.addEventListener("click", ()=>{
   if(lonelyModeInput.checked === true){
-    botMode = true
+    if(lonelyModeInputDisabled) return
+    lonelyModeInput.checked = false
+    botMode = false
+    console.log(botMode);
   }
   else{
-    botMode = false
+    if(lonelyModeInputDisabled) return
+    lonelyModeInput.checked = true
+    botMode = true
+    console.log(botMode);
   }
   
 })
+
+
+replayBtn.addEventListener("click", replayBtnClickHandler)
 
 // ------------------ GAME LOOP --------------------
 
@@ -73,9 +84,13 @@ lonelyModeInput.addEventListener("click", ()=>{
 function PlayGame() {
   
   if(lonelyModeInput.disabled === false){
+    lonelyModeInputDisabled = true
     lonelyModeInput.disabled = true
   }
+
+  
   const chidOfGridContainer = this.children[0]
+  if(chidOfGridContainer.classList.contains("marked")) return
   let x = this.children[0].id;
   let x_prev = x
 
@@ -136,6 +151,21 @@ function checkIfGameOver() {
       item.removeEventListener("click", PlayGame, { once: true });
       item.style.cursor = "not-allowed"
     });
+    displayOnScreenText("<| Game Over |>")
+
+    gameOverScreen.style.display = "grid"
+
+    gameOverScreen.children[0].textContent = (winner == "XO") ? "It's A Draw Baby!" :`${winner} Is The Winner!!!`
+
+    const gameOverRestartBtn = document.querySelector('.replay-btn-fix-it-later');
+    
+    gameOverRestartBtn.addEventListener("click", ()=>{
+      replayBtnClickHandler()
+    })
+
+    replayBtn.parentElement.style.display = "none"
+
+
   }
 
 }
@@ -171,9 +201,6 @@ function rowWin() {
 }
 
 function columnWin() {
-  console.log("In C");
-  console.log(board);
-  
   let column1_color = [0,3,6]
   let column2_color = [1,4,7]
   let column3_color = [2,5,8]
@@ -324,6 +351,7 @@ for (let i = 0; i < 9; i++) {
    }
  })
 
+
  displayOnScreenText(currentPlayer + "'s" + " Turn:")
  gameTitle_His.innerText = ""
 
@@ -333,4 +361,28 @@ for (let i = 0; i < 9; i++) {
 });
 
 lonelyModeInput.disabled = false
+lonelyModeInputDisabled = false
+replayBtn.parentElement.style.display = "block"
+
+
+gameOverScreen.style.display = "none"
+
+}
+
+function gsapAnimation(){
+
+tl.to('.game-over-text',{
+    duration: 1,
+    y: '0',
+    ease: Power3.easeOut
+})
+.to('.op',{
+    duration: 1.2,
+    y: '100px',
+    ease: Power3.easeOut
+},"-=1")
+.onOverwrite = () =>{
+  console.log("overwrite");
+  
+}
 }

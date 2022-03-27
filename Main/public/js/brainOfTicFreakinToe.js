@@ -6,21 +6,33 @@ let winner = "";
 let currentPlayerReverse = ""
 let botMode = false
 let yourTURN = true
+let currentUser = sessionStorage.getItem("USERNAME");
 let somefirstState = false
 let firstTurn = false
 let reseted = false
 let allowed = true
 let twoPlayerMode = true
 let available_space = [0,1,2,3,4,5,6,7,8]
+let messageToBeSent = ""
 const gameBoard = document.querySelectorAll(".grid-item-container");
 const gameTitle = document.querySelector("#game-title")
 const gameTitle_His = document.querySelector("#game-title-history")
 const winningSound = document.querySelector("#winning-sound")
 const marking1 = document.querySelector("#marking1-sound")
 const marking2 = document.querySelector("#marking2-sound")
+const popALert = document.querySelector("#message-pop-sound")
 const gridItem = document.querySelectorAll(".grid-item");
 const replayBtn = document.querySelector("[data-replay-btn]");
 const notAllowedScreen = document.querySelector('.not-allowed');
+const gameOverScreen = document.querySelector('#game-over-screen');
+const sendChatMessage = document.querySelector('#send-chat-message');
+const messageValue = document.querySelector('.chat-input');
+const navMessage = document.querySelector('.nav-message');
+const chatUl = document.querySelector('#chat-ul');
+const chatBox = document.querySelector("#built-in-realtime-chat");
+
+chatBox.style.display = "none"
+
 
 const socket = io()
 
@@ -74,6 +86,15 @@ socket.on('whatToDo', ()=> {
   })
 });
 
+socket.on('requestedMessage', (message, user)=> {
+  console.log("message is ",message);
+  receivedMessage(message, user)
+  if(chatBox.style.display == "none"){
+    popALert.play()
+  }
+  
+});
+
 let board = [
   gameBoard[0].innerText,
   gameBoard[1].innerText,
@@ -98,8 +119,23 @@ gameBoard.forEach((item) => {
   item.addEventListener("mouseleave",removeTurn)
 })
 
+sendChatMessage.addEventListener("click",(event)=>{
+  event.preventDefault()
+  sendMessage()
+})
+
+
+messageValue.addEventListener("change",()=>{messageToBeSent += messageValue.value})
 
 replayBtn.addEventListener("click", replayBtnClickHandler)
+navMessage.addEventListener("click", ()=>{
+  if(chatBox.style.display == "none"){
+    chatBox.style.display = "flex"
+  }
+  else{
+    chatBox.style.display = "none"
+  }
+})
 
 
 
@@ -155,6 +191,7 @@ function PlayGame() {
   if(!yourTURN) return
   console.log("play Game");
   const chidOfGridContainer = this.children[0]
+  if(chidOfGridContainer.classList.contains("marked")) return
   let x = this.children[0].id;
   let x_prev = x
 
@@ -196,10 +233,7 @@ available_space.splice(y,1)
 
 checkIfGameOver();
 flipPlayerMyGame()
-
-if(!botMode) return
-BotPlay(x_prev,x)
-  
+ 
 
 }
 
@@ -217,6 +251,29 @@ function checkIfGameOver() {
   if (winner != ""){
     winningSound.volume = 0.3
     winningSound.play()
+    gameBoard.forEach((item) => {
+      item.removeEventListener("click", PlayGame, { once: true });
+      item.style.cursor = "not-allowed"
+    });
+    displayOnScreenText("<| Game Over |>")
+
+    gameOverScreen.style.display = "grid"
+
+    gameOverScreen.children[0].textContent = (winner == "XO") ? "It's A Draw Baby!" :`${winner} Is The Winner!!!`
+
+    const gameOverRestartBtn = document.querySelector('.replay-btn-fix-it-later');
+    
+    gameOverRestartBtn.addEventListener("click", ()=>{
+      replayBtnClickHandler()
+      console.log("replayed");
+    })
+
+    document.querySelector('.dope').addEventListener("click", (e)=>{
+      replayBtnClickHandler()
+      console.log("replayed dope");
+    })
+
+    replayBtn.parentElement.style.display = "none"
   }
 
 }
@@ -346,24 +403,6 @@ function winnerRedDisplay(arr){
 }
 
 
-function BotPlay(x_prev,x){
-
-  botChooses = available_space[Math.floor(Math.random() * available_space.length)]
-  let babu = available_space.indexOf(parseInt(botChooses));
-  console.log("Bot: "+botChooses);
-  available_space.splice(babu,1);
-  console.log(available_space);
-  gridItem.forEach((item) =>{
-    if(item.id == botChooses){
-      item.innerText = currentPlayer
-    }
-  })
-  gameTitle_His.textContent = currentPlayer + " :  " + botChooses + " --> " + (currentPlayer)
-  flipPlayerMyGame()
-  checkIfGameOver()
-  
-}
-
 
 function showTurn(){
   if(!allowed) return
@@ -388,16 +427,75 @@ function removeTurn(){
       this.childNodes[1].classList.remove("grid-item-mark-indicator-o")
     }
   }
-  
 
 }
 
 
 function replayBtnClickHandler(){
-  if(this.innerText == "Would You Like To Replay"){
+  console.log(this.innerText);
+  
+  if(this.innerText == "Would You Like To Replay" || this.innerText == undefined){
     socket.emit('resetOnlineGame')
+    console.log("emited");
+    
 }
 else{
   socket.emit('replay')
 }
+}
+
+function sendMessage(){
+  if(messageToBeSent == "") return
+  console.log(messageToBeSent);
+  
+  socket.emit('send-chat-message', messageToBeSent, currentUser)
+
+  // Creating & Appending Elements For Sent Message
+  const li = document.createElement("li")
+  const divSent = document.createElement("div")
+  const spanSentMessage = document.createElement("span")
+
+  li.classList.add("ex-girlfriend")
+  divSent.classList.add("sent")
+  spanSentMessage.classList.add("message")
+
+  spanSentMessage.textContent = messageToBeSent
+
+  divSent.appendChild(spanSentMessage)
+  li.appendChild(divSent)
+  chatUl.appendChild(li)
+
+  //Resetting The Input Box And Variable
+  messageValue.value = ""
+  messageToBeSent = ""
+  messageValue.focus = true
+
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+
+function receivedMessage(message, userName){
+  
+  // Creating Elements 
+  const li = document.createElement("li")
+  const divReceived = document.createElement("div")
+  const divUserName = document.createElement("div")
+  const spanMessage = document.createElement("span")
+  
+  // Adding ClassList
+  divReceived.classList.add("received")
+  divUserName.classList.add("user-name")
+  spanMessage.classList.add("message")
+  
+  // Adding Text
+  divUserName.textContent = userName + ":"
+  spanMessage.textContent = message
+
+  //Appending Childs
+  divReceived.appendChild(divUserName)
+  divReceived.appendChild(spanMessage)
+  li.appendChild(divReceived)
+  chatUl.appendChild(li)
+  chatBox.scrollTop = chatBox.scrollHeight;
+
 }

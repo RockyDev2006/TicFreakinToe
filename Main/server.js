@@ -28,6 +28,10 @@ io.on('connection', (socket) => {
       socket.broadcast.to(user.roomName).emit('markPos',data)
     })
 
+    socket.on('send-chat-message',(message, userNAME)=>{
+      socket.broadcast.to(user.roomName).emit('requestedMessage', message,userNAME)
+    })
+
     socket.to(overpowered).emit('firstTurn',notSelected)
 
     socket.on('next', notSelected=>{

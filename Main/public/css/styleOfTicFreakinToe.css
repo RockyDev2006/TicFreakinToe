@@ -1,4 +1,7 @@
-/* Branch :- rancho/quality-fixes */
+/* Branch :- rancho/opstyling */
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hammersmith+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=K2D&display=swap');
 
 *{
   margin: 0;
@@ -9,8 +12,14 @@
 body {
   background-color: wheat;
   font-size: 3rem;
-  font-family: "Poppins";
+  font-family: 'K2D','Poppins', sans-serif;
+  overflow: hidden;
 }
+
+button{
+  font-family: 'Hammersmith One', cursive;
+}
+
 
 .container-wrapper{
   color: rgb(241, 241, 241);
@@ -35,12 +44,18 @@ body {
   justify-content: center;
 }
 
+
+.settings{
+  text-align: left;
+}
+
 .grid-item-container {
+  font-family: "Poppins", sans-serif;
   position: relative;
   display: flex;
   user-select: none;
-  width: 100px;
-  height: 100px;
+  width: 6.5rem;
+  height: 6.5rem;
   margin: 2px;
   background-color: hsl(244, 47%, 54%);
   justify-content: center;
@@ -71,6 +86,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 .hell{
@@ -96,7 +112,8 @@ body {
   position: absolute;
   top:10px;
   margin-left: 50%;
-  transform: translate(-50%)
+  transform: translate(-50%);
+  z-index: 12;
 }
 
 
@@ -117,26 +134,36 @@ body {
   transition: all .2s;
 }
 
+.replay-btn-fix-it-later{
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: white;
+  background-color: hsl(209, 91%, 58%);
+  padding: .5rem 1.5rem;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all .2s;
+}
+
 .replay-btn:hover{
   padding: .6rem 1.6rem;
   background-color: hsl(209, 91%, 50%);
 }
 
-.lonely-mode{
-  position: absolute;
-  top: 7rem;
-  left: 1rem;
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  
+
+.room-container{
+  /* background-color: red; */
 }
 
-.lonely-mode > input{
-  width: 1.2rem;
-  height: 1.2rem;
-  cursor: pointer;
+
+.lonely-mode{
+  display: flex;
+  align-items: center;
+  /* background-color: blue; */
 }
+
 
 #lonely-mode-text{
   cursor: pointer;
@@ -148,13 +175,6 @@ body {
   color: hsl(209, 91%, 80%);
   transform: scale(1.03);
   transition: all .1s ease-in;
-}
-
-
-.room-container{
-  position: absolute;
-  top: 3rem;
-  left: 5rem;
 }
 
 .not-allowed{
@@ -176,6 +196,31 @@ body {
 }
 
 
+.replay-btn-fix-it-later:hover{
+  padding: .6rem 1.6rem;
+  background-color: hsl(209, 91%, 50%);
+}
+
+#game-over-screen{
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  display: none;
+  z-index: 110;
+  background-color: hsla(0, 100%, 1%, 0.5);
+  place-content: center;
+}
+
+
+.game-over{
+  bottom: 40%;
+}
+
+.replay-btn-container, .game-over-text, #game-over-screen{
+  z-index: 100;
+}
 
 @keyframes scale{
   0%{
@@ -189,12 +234,78 @@ body {
   }
 }
 
-@keyframes scaleText{
+@keyframes gameOverAnimation{
   0%{
-    font-size: 0rem;
-    transform: scale(0);
+    background-color: hsla(0, 100%, 1%, 0.1);
+    opacity: 0;
   }
   100%{
-    transform: scale(1);
+    background-color: hsla(0, 100%, 1%, 0.5);
+    font-size: inherit;
+    opacity: 1;
   }
+}
+
+@media screen and (max-width: 1500px) {
+  .container {
+    width: 100%;
+  }
+  .hero{
+    width: 100%;
+  }
+}
+
+/* @media only screen and (max-width: 1400px) {
+  .hero{
+      width: 100%;
+  }
+
+} */
+
+@media screen and (max-width: 900px) {
+  :root{
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .settings{
+    /* display: none; */
+    z-index: inherit;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  /* .navbar img{
+    display: block;
+    margin-top: 3rem;
+    margin-left: 5%;
+  } */
+  .icon{
+    text-align: left;
+  }
+  /* .navbar{
+    height: 100vh;
+    width: 50%;
+    margin-left: -5.5%;
+    margin-top: -3rem;
+    z-index: 110;
+    background-color: purple;
+  } */
+
+}
+
+@media screen and (max-width: 400px) {
+  :root{
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 300px) {
+  :root{
+    font-size: 10px;
+  }
+
 }
