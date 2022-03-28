@@ -125,7 +125,20 @@ button{
         left: 50%;
         width: 60%;
         transform: translate(-50%, -50%);
-        z-index: 90;
+        z-index: 110;
     }
     
-  }
+}
+
+
+@media screen and (max-width: 500px) {
+    #built-in-realtime-chat{
+        width: 90%;
+        height: 80%;
+    }
+
+    #chat-input-area input{
+        padding: .7rem;
+
+    }
+}
